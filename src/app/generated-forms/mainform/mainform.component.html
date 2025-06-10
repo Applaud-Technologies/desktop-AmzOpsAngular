@@ -1,0 +1,222 @@
+<div class="main-body flex flex-col gap-1 p-4">
+  <form [formGroup]="myGroup" >
+    <select id="CbBranch" class="rounded-sm mb-2" formControlName="CbBranch">
+      <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.name }}</option>
+    </select>
+  </form>
+  <mat-tab-group id="TabControl" >
+  <!-- TabSites -->
+ <mat-tab label="Sites">
+  <div class="flex flex-col gap-1 p-4">
+      <div class="flex gap-4 mb-2">
+        <button mat-raised-button color="primary" (click)="addSite()">Add Site</button>
+        <button mat-raised-button color="accent" (click)="saveSitesBatch(sites)">Save</button>
+      </div>
+
+    <div class="table-responsive">
+  <table *ngIf="sites?.length && sitesDisplayedColumns?.length"
+         mat-table [dataSource]="sitesDataSource" matSort class="rounded-sm mb-2">
+
+      <!-- Dynamic Columns -->
+      <ng-container *ngFor="let col of sitesDisplayedColumns" [matColumnDef]="col">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ col }}</th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngIf="isRowInEditMode(row) && col !== 'id' && col !== 'state'; else viewCell">
+            <ng-container *ngIf="getFormControl(col) as ctrl">
+              <input
+                matInput
+                [formControl]="ctrl"
+                
+                 />
+            </ng-container>
+          </ng-container>
+          <ng-template #viewCell>
+            {{ row[col] }}
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngIf="isRowInEditMode(row); else actionButtons">
+            <button mat-stroked-button color="primary" (click)="saveEdit(row)">Save</button>
+            <button mat-stroked-button (click)="cancelEdit()">Cancel</button>
+            <button mat-stroked-button color="warn" (click)="deleteSite(row.id)">Delete</button>
+          </ng-container>
+          <ng-template #actionButtons>
+            <button mat-stroked-button (click)="selectSiteRow(row)">Edit</button>
+            <button mat-stroked-button color="warn" (click)="deleteSite(row.id)">Delete</button>
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="sitesDisplayedColumns.concat('actions')"></tr>
+      <tr mat-row
+          *matRowDef="let row; columns: sitesDisplayedColumns.concat('actions')"
+          (click)="selectSiteRow(row)"
+          [ngClass]="{
+       'site-row-new': row.state === siteRowStateEnum.New,
+       'site-row-modified': row.state === siteRowStateEnum.Modified,
+       'site-row-deleted': row.state === siteRowStateEnum.Deleted,
+       'site-row-unchanged': row.state === siteRowStateEnum.Unchanged || !row.state
+     }">
+      </tr>
+    </table>
+  </div>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  </div>
+</mat-tab>
+
+
+  <!-- TabContacts -->
+  <mat-tab label="Contacts">
+    <div class="flex flex-col gap-4 p-4">
+      <div class="flex gap-4 mb-2">
+        <button mat-raised-button color="primary" (click)="addContact()">Add Contact</button>
+        <button mat-raised-button color="accent" (click)="saveContactsBatch(contacts)">Save</button>
+      </div>
+      <table *ngIf="contacts?.length && contactDisplayedColumns?.length"
+             mat-table [dataSource]="contacts" matSort class="rounded-sm mb-2">
+        <!-- Dynamic Columns -->
+        <ng-container *ngFor="let col of contactDisplayedColumns" [matColumnDef]="col">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ col }}</th>
+          <td mat-cell *matCellDef="let row">
+            <ng-container *ngIf="isContactRowInEditMode(row) && col !== 'id'; else viewContactCell">
+              <ng-container *ngIf="getContactFormControl(col) as ctrl">
+                <input matInput [formControl]="ctrl" />
+              </ng-container>
+            </ng-container>
+            <ng-template #viewContactCell>
+              {{ row[col] }}
+            </ng-template>
+          </td>
+        </ng-container>
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let row">
+            <ng-container *ngIf="isContactRowInEditMode(row); else contactActionButtons">
+              <button mat-stroked-button color="primary" (click)="saveContactEdit(row)">Save</button>
+              <button mat-stroked-button (click)="cancelContactEdit()">Cancel</button>
+              <button mat-stroked-button color="warn" (click)="deleteContact(row.id)">Delete</button>
+            </ng-container>
+            <ng-template #contactActionButtons>
+              <button mat-stroked-button (click)="selectContactRow(row)">Edit</button>
+              <button mat-stroked-button color="warn" (click)="deleteContact(row.id)">Delete</button>
+            </ng-template>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="contactDisplayedColumns.concat('actions')"></tr>
+        <tr mat-row *matRowDef="let row; columns: contactDisplayedColumns.concat('actions')"
+             [ngClass]="{
+       'site-row-new': row.state === siteRowStateEnum.New,
+       'site-row-modified': row.state === siteRowStateEnum.Modified,
+       'site-row-deleted': row.state === siteRowStateEnum.Deleted,
+       'site-row-unchanged': row.state === siteRowStateEnum.Unchanged || !row.state
+     }"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    </div>
+  </mat-tab>
+
+  <!-- TabTeamMembers -->
+  <mat-tab label="Team Members">
+    <div class="flex flex-col gap-4 p-4">
+      <div class="flex gap-4 mb-2">
+        <button mat-raised-button color="primary" (click)="addTeamMember()">Add Team Member</button>
+        <button mat-raised-button color="accent" (click)="saveTeamMembersBatch(teamMembers)">Save</button>
+      </div>
+      <table *ngIf="teamMembers?.length && teamMembersDisplayedColumns?.length"
+             mat-table [dataSource]="teamMembers" matSort class="rounded-sm mb-2">
+        <ng-container *ngFor="let col of teamMembersDisplayedColumns" [matColumnDef]="col">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ col }}</th>
+          <td mat-cell *matCellDef="let row">
+            <ng-container *ngIf="isTeamMemberRowInEditMode(row) && col !== 'adpEmployeeId'; else viewTeamMemberCell">
+              <ng-container *ngIf="getTeamMemberFormControl(col) as ctrl">
+                <input matInput [formControl]="ctrl" />
+              </ng-container>
+            </ng-container>
+            <ng-template #viewTeamMemberCell>
+              {{ row[col] }}
+            </ng-template>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let row">
+            <ng-container *ngIf="isTeamMemberRowInEditMode(row); else teamMemberActionButtons">
+              <button mat-stroked-button color="primary" (click)="saveTeamMemberEdit(row)">Save</button>
+              <button mat-stroked-button (click)="cancelTeamMemberEdit()">Cancel</button>
+              <button mat-stroked-button color="warn" (click)="deleteTeamMember(row.adpEmployeeId)">Delete</button>
+            </ng-container>
+            <ng-template #teamMemberActionButtons>
+              <button mat-stroked-button (click)="selectTeamMemberRow(row)">Edit</button>
+              <button mat-stroked-button color="warn" (click)="deleteTeamMember(row.adpEmployeeId)">Delete</button>
+            </ng-template>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="teamMembersDisplayedColumns.concat('actions')"></tr>
+        <tr mat-row *matRowDef="let row; columns: teamMembersDisplayedColumns.concat('actions')"
+             [ngClass]="{
+       'site-row-new': row.state === siteRowStateEnum.New,
+       'site-row-modified': row.state === siteRowStateEnum.Modified,
+       'site-row-deleted': row.state === siteRowStateEnum.Deleted,
+       'site-row-unchanged': row.state === siteRowStateEnum.Unchanged || !row.state
+     }"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    </div>
+  </mat-tab>
+
+  <!-- TabAccounts -->
+  <mat-tab label="Accounts">
+    <div class="flex flex-col gap-4 p-4">
+      <div class="flex gap-4 mb-2">
+        <button mat-raised-button color="primary" (click)="addAccount()">Add Account</button>
+        <button mat-raised-button color="accent" (click)="saveAccountsBatch(accounts)">Save</button>
+      </div>
+      <table *ngIf="accounts?.length && accountsDisplayedColumns?.length"
+             mat-table [dataSource]="accounts" matSort class="rounded-sm mb-2">
+        <ng-container *ngFor="let col of accountsDisplayedColumns" [matColumnDef]="col">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ col }}</th>
+          <td mat-cell *matCellDef="let row">
+            <ng-container *ngIf="isAccountRowInEditMode(row) && col !== 'accountNumber'; else viewAccountCell">
+              <ng-container *ngIf="getAccountFormControl(col) as ctrl">
+                <input matInput [formControl]="ctrl" />
+              </ng-container>
+            </ng-container>
+            <ng-template #viewAccountCell>
+              {{ row[col] }}
+            </ng-template>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let row">
+            <ng-container *ngIf="isAccountRowInEditMode(row); else accountActionButtons">
+              <button mat-stroked-button color="primary" (click)="saveAccountEdit(row)">Save</button>
+              <button mat-stroked-button (click)="cancelAccountEdit()">Cancel</button>
+              <button mat-stroked-button color="warn" (click)="deleteAccount(row.accountNumber)">Delete</button>
+            </ng-container>
+            <ng-template #accountActionButtons>
+              <button mat-stroked-button (click)="selectAccountRow(row)">Edit</button>
+              <button mat-stroked-button color="warn" (click)="deleteAccount(row.accountNumber)">Delete</button>
+            </ng-template>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="accountsDisplayedColumns.concat('actions')"></tr>
+        <tr mat-row *matRowDef="let row; columns: accountsDisplayedColumns.concat('actions')"
+             [ngClass]="{
+       'site-row-new': row.state === siteRowStateEnum.New,
+       'site-row-modified': row.state === siteRowStateEnum.Modified,
+       'site-row-deleted': row.state === siteRowStateEnum.Deleted,
+       'site-row-unchanged': row.state === siteRowStateEnum.Unchanged || !row.state
+     }"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    </div>
+  </mat-tab>
+  </mat-tab-group>

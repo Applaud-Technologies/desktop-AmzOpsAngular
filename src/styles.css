@@ -1,0 +1,168 @@
+/* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* Global base styles for sleek, modern look */
+:root {
+  /* Modern color palette */
+  --primary-bg: #f7fafd;
+  --gradient-bg: radial-gradient(circle at 60% 30%, #eaf6ff 0%, #f7fafd 60%, #ffffff 100%);
+  --primary-text: #222b45;
+  --accent: #5e72e4;
+  --card-bg: rgba(255, 255, 255, 0.60);
+  --frosted-border: rgba(180, 210, 255, 0.38);
+  --border-radius: 18px;
+  --shadow: 0 8px 32px 0 rgba(94,114,228,0.12), 0 1.5px 6px 0 rgba(130,94,228,0.08);
+  --transition: 0.2s cubic-bezier(.4,0,.2,1);
+  --spacing: 1.6rem;
+  --component-gap: 1.4rem;
+  --font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--gradient-bg);
+  color: var(--primary-text);
+  font-family: var(--font-family);
+  font-size: 17px;
+  letter-spacing: 0.01em;
+  min-height: 100vh;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1 1 auto;
+  padding: var(--spacing);
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--component-gap);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+button, .mat-button {
+  background: linear-gradient(90deg, #5e72e4 0%, #825ee4 100%);
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.8em 2.2em;
+  font-size: 1.08em;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 32px 0 rgba(94,114,228,0.16), 0 1.5px 6px 0 rgba(130,94,228,0.08);
+  backdrop-filter: blur(8px);
+  transition: 
+    background var(--transition), 
+    box-shadow var(--transition), 
+    transform var(--transition), 
+    filter var(--transition);
+  outline: none;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.02em;
+}
+button:active, .mat-button:active {
+  filter: brightness(0.96) saturate(1.2);
+  transform: scale(0.97);
+}
+button:focus-visible, .mat-button:focus-visible {
+  box-shadow: 0 0 0 3px #b3c6ff;
+}
+button:hover, .mat-button:hover {
+  background: linear-gradient(90deg, #4052bf 0%, #6d47d9 100%);
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 12px 36px 0 rgba(94,114,228,0.22), 0 2px 8px 0 rgba(130,94,228,0.10);
+}
+
+/* Button variants */
+button.secondary, .mat-button.secondary {
+  background: linear-gradient(90deg, #fff 0%, #f7fafd 100%);
+  color: var(--accent);
+  border: 2px solid #5e72e4;
+  box-shadow: 0 2px 8px 0 rgba(94,114,228,0.06);
+}
+button.secondary:hover, .mat-button.secondary:hover {
+  background: linear-gradient(90deg, #e5e9fa 0%, #f7fafd 100%);
+  color: #4052bf;
+  border-color: #4052bf;
+}
+button.outline, .mat-button.outline {
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid #5e72e4;
+  box-shadow: none;
+}
+button.outline:hover, .mat-button.outline:hover {
+  background: #f7fafd;
+  color: #4052bf;
+  border-color: #4052bf;
+}
+
+button:hover, .mat-button:hover {
+  background: #4052bf;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 32px 0 rgba(30,34,90,0.13);
+}
+
+.card, .mat-card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: calc(var(--spacing) * 1.2);
+  margin-bottom: var(--component-gap);
+  margin-top: var(--component-gap);
+  margin-left: auto;
+  margin-right: auto;
+  border: 1.5px solid var(--frosted-border);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+}
+.card:hover, .mat-card:hover {
+  box-shadow: 0 12px 36px 0 rgba(94,114,228,0.22), 0 2px 8px 0 rgba(130,94,228,0.10);
+  transform: translateY(-2px) scale(1.01);
+  border-color: #b3d4fc;
+}
+
+input, .mat-input-element, textarea {
+  border-radius: var(--border-radius);
+  border: 1px solid #e3e8f0;
+  padding: 0.8em 1em;
+  font-size: 1em;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  background: #fafbfc;
+  box-shadow: none;
+}
+input:focus, .mat-input-element:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px 0 rgba(94,114,228,0.09);
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  main {
+    padding: 1rem;
+    max-width: 100%;
+  }
+  .card, .mat-card {
+    padding: 1rem;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+}
+
